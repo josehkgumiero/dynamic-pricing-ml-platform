@@ -1,0 +1,14 @@
+Próximos Passos (Evoluções)
+Processamento distribuído com Spark
+Inferência em streaming com Kafka
+Monitoramento e drift detection
+Testes A/B
+Deploy em cloud
+adicione mlflow ou spark para escalar o processamento
+Versionamento de modelos (MLflow)
+Monitoramento de métricas
+Criar `docker-compose.yml`
+Adaptar para **AWS / GCP**
+Integrar **MLflow**
+Criar **versão Kaggle Notebook**
+Simular entrevista técnica usando esse projeto
