@@ -208,7 +208,6 @@ Get-Process | Where-Object { $_.ProcessName -like "*uvicorn*" }
 Stop-Process -Id 9024 -Force
 
 ```
-```
 - Abra:
 ```
 http://127.0.0.1:8000/docs
