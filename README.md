@@ -33,14 +33,6 @@ O objetivo é simular **um sistema real utilizado por empresas de tecnologia**, 
 
 O dataset é usado para **simular um cenário real de precificação dinâmica**, criando uma variável target baseada em demanda e custo logístico.
 
-### Baixar dataset do Kaggle via Powershell
-```
-python -m pip install kaggle
-kaggle datasets download -d olistbr/brazilian-ecommerce
-Expand-Archive -Path brazilian-ecommerce.zip -DestinationPath .
-Move-Item olist_order_items_dataset.csv data\
-```
-
 ---
 
 ## Problema de Negócio
@@ -94,6 +86,9 @@ dynamic-pricing-ml-platform/
 ├── api/
 │   └── main.py
 │
+├── extract/
+│   └── download_dataset.py
+│
 ├── feature_store/
 │   └── build_features.py
 │
@@ -104,7 +99,9 @@ dynamic-pricing-ml-platform/
 │   └── batch_training.py
 │
 ├── data/
-│   └── olist_order_items_dataset.csv
+│   └── brazilian-ecommerce/
+│
+├── download_dataset.py
 │
 ├── requirements.txt
 ├── Dockerfile
@@ -133,6 +130,17 @@ As features são criadas de forma **padronizada**, garantindo consistência entr
 
 ## Como Executar o Projeto
 
+- Atulizar o PIP
+```
+python.exe -m pip install --upgrade pip
+```
+
+- Criar o .gitignore
+```
+data/
+```
+
+
 ### 1 Instalar dependências
 - Criar o ambiente virtual
 ```
@@ -144,12 +152,21 @@ venv\Scripts\activate
 ```
 - Criar arquivo requirements.txt
 ```
-pandas==2.1.4
-numpy==1.26.4
-scikit-learn==1.4.0
-fastapi==0.110.0
-uvicorn==0.27.1
-joblib==1.3.2
+# Core Scientific Stack
+numpy>=2.0.0
+pandas>=2.2.0
+scikit-learn>=1.5.0
+joblib>=1.4.0
+
+# Gradient Boosting
+xgboost>=2.0.0
+
+# Data Ingestion
+kagglehub>=0.2.8
+
+# API / Serving
+fastapi>=0.115.0
+uvicorn>=0.30.0
 ```
 - Instalar as dependências
 ```
@@ -157,24 +174,47 @@ pip install -r requirements.txt
 ```
 - Validar a Instalação
 ```
-python -c "import pandas, numpy, fastapi, scikit-learn, fastapi, uvicorn, joblib"
+python -c "import pandas, numpy, fastapi, sklearn, fastapi, uvicorn, joblib, kagglehub"
 ```
 
-### 2 Treinar o modelo
+### 2 Baixar dataset do Kaggle
+- via Python
 ```
-python pipelines/batch_training.py
+python extract/download_dataset.py
+```
+-  via Powershell
+```
+python -m pip install kaggle
+kaggle datasets download -d olistbr/brazilian-ecommerce
+Expand-Archive -Path brazilian-ecommerce.zip -DestinationPath .
+Move-Item olist_order_items_dataset.csv data\
 ```
 
-### 3 Subir a API
+### 3 Treinar o modelo
+```
+python -m pipelines.batch_training
+```
+
+### 4 Subir a API
 ```
 uvicorn api.main:app --reload
+```
+- Listar ID do Unicorn em Powershell
+```
+Get-Process | Where-Object { $_.ProcessName -like "*uvicorn*" }
+```
+- Parar o processo de acordo com o ID
+```
+Stop-Process -Id 9024 -Force
+
+```
 ```
 - Abra:
 ```
 http://127.0.0.1:8000/docs
 ```
 
-### 4 Fazer uma predição
+### 5 Fazer uma predição
 ```
 Invoke-RestMethod `
   -Uri "http://127.0.0.1:8000/predict" `
